@@ -1,5 +1,6 @@
 from first import *
 from constructor import *
+from follow import *
 
 def main():
 
@@ -7,7 +8,8 @@ def main():
     #calcularFirst
     first = First(gramatica)
     # print(first)
-    
+    f = calcularFollow(gramatica, first)
     #calcularFollow
+
 
 main()
