@@ -1,11 +1,9 @@
-
-
-
 from collections import defaultdict
 from first import IsTerminal, calcularFirst, diccionarioGramatica, tokenizeProduccion
 
 
 follows = defaultdict(set)
+
 
 def calcularFollow(gramatica: str, firsts: dict) -> dict:
     global diccionarioProducciones
@@ -28,7 +26,7 @@ def calcularFollow(gramatica: str, firsts: dict) -> dict:
                         epsilon_en_beta = False
 
                         if i + 1 < len(simbolos):
-                            beta = simbolos[i + 1:]
+                            beta = simbolos[i + 1 :]
                             for simbolo_beta in beta:
                                 if IsTerminal(simbolo_beta):
                                     primero_de_beta.add(simbolo_beta)

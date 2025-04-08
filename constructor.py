@@ -25,4 +25,3 @@ def leerArchivo(file: str) -> Union[List[str], str]:
         return "El archivo no fue encontrado"
     except IOError:
         return "Error al leer el archivo"
-
