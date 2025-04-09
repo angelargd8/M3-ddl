@@ -12,6 +12,7 @@ def tokenizeProduccion(simbolo: str) -> List[str]:
     i = 0
     while i < len(simbolo):
 
+        #  Terminal
         if simbolo[i].islower():
             buffer = simbolo[i]
             i += 1
@@ -20,6 +21,7 @@ def tokenizeProduccion(simbolo: str) -> List[str]:
                 i += 1
             tokens.append(buffer)
 
+        # No terminales
         elif simbolo[i].isupper():
             buffer = simbolo[i]
             i += 1
@@ -42,7 +44,7 @@ def tokenizeProduccion(simbolo: str) -> List[str]:
 
 def IsTerminal(simbolo: str) -> bool:
     # Definir los terminales y no terminales
-    terminales = ["*", "(", "{", "}", "[", "]", "|", "+", "?", "ε"]
+    terminales = ["*", "(", ")", "{", "}", "[", "]", "|", "+", "?", "ε"]
     return simbolo.islower() or simbolo == "ε" or simbolo in terminales
 
 
@@ -87,6 +89,21 @@ def calcularFirst(simbolo: str) -> set:
 def diccionarioGramatica(gramatica: str) -> dict:
     producciones = defaultdict(set)
     for produccion in reversed(gramatica):
+        no_terminal, expansion = produccion.split("->")
+        # producciones[no_terminal].add(expansion)
+        partes = expansion.split("|")
+        for parte in partes:
+            producciones[no_terminal].add(parte)
+
+    print("Producciones:")
+    for no_terminal, expansions in producciones.items():
+        print(f"{no_terminal} -> {', '.join(expansions)}")
+    return producciones
+
+
+def diccionarioForFolow(gramatica: str) -> dict:
+    producciones = defaultdict(set)
+    for produccion in gramatica:
         no_terminal, expansion = produccion.split("->")
         # producciones[no_terminal].add(expansion)
         partes = expansion.split("|")
