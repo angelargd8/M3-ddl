@@ -6,7 +6,7 @@ from GrammarProcesor.Follow import *
 def main():
 
     #agregar validacion de archivo y que sean varios xd
-    archivo = "./yapar/slr-1.yalp"
+    archivo = "./yapar/slr-4.yalp"
     tokens, producciones = leerYapar(archivo)
     
     print("//// Tokens: ////")

@@ -25,7 +25,7 @@ def calcularFollow(producciones: dict, firsts: dict) -> dict:
         cambiado = False
         for A in producciones:
             for produccion in producciones[A]:
-                simbolos = tokenizeProduccion(produccion)
+                simbolos = produccion
                 for i in range(len(simbolos)):
                     B = simbolos[i]
                     if not IsTerminal(B,producciones):
