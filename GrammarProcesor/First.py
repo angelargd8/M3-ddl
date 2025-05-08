@@ -43,6 +43,10 @@ def tokenizeProduccion(simbolo: str) -> List[str]:
 
 
 def IsTerminal(simbolo: str) -> bool:
+
+    if simbolo in diccionarioProducciones:
+        return False #es un no terminal porque tiene producciones
+    
     # Definir los terminales y no terminales
     terminales = ["*", "(", ")", "{", "}", "[", "]", "|", "+", "?", "ε"]
     return simbolo.islower() or simbolo == "ε" or simbolo in terminales
@@ -54,7 +58,8 @@ def calcularFirst(simbolo: str) -> set:
 
     if IsTerminal(simbolo):
         # print("Es terminal " + str(simbolo) )
-        return simbolo
+        # return simbolo
+        return set([simbolo])
 
     if simbolo in firsts and firsts[simbolo]:
         # print("Ya calculado FIRST de: " + str(simbolo) )
@@ -69,6 +74,16 @@ def calcularFirst(simbolo: str) -> set:
             simbolo_actual = produccion[i]
             # print("Simbolo actual: " + str(simbolo_actual) )
             # print("Simbolo actual: " + str(simbolo_actual) )
+
+            if simbolo_actual == simbolo:
+                break # evitar bucle infinito
+
+            #para evitar el bucle infinito
+            if simbolo_actual not in diccionarioProducciones:
+                #es un terminal no reconocido como id, o simbolo mal definido
+                firsts[simbolo].add(simbolo_actual)
+                break
+
 
             if IsTerminal(simbolo_actual):
                 firsts[simbolo].add(simbolo_actual)

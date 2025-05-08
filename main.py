@@ -1,6 +1,6 @@
-from first import *
+from GrammarProcesor.First import *
 from constructor import *
-from follow import *
+from GrammarProcesor.Follow import *
 
 
 def main():

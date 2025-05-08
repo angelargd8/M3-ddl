@@ -1,5 +1,5 @@
 from collections import defaultdict
-from first import IsTerminal, calcularFirst, diccionarioForFolow, tokenizeProduccion
+from GrammarProcesor.First import IsTerminal, calcularFirst, diccionarioForFolow, tokenizeProduccion
 
 
 follows = defaultdict(set)
