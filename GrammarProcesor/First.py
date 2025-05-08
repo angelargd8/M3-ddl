@@ -51,13 +51,7 @@ def tokenizeProduccion(simbolo: str) -> List[str]:
 
 
 def IsTerminal(simbolo: str, producciones: dict) -> bool:
-
-    # if simbolo in diccionarioProducciones:
-    #     return False #es un no terminal porque tiene producciones
-    
     # # Definir los terminales y no terminales
-    # terminales = ["*", "(", ")", "{", "}", "[", "]", "|", "+", "?", "ε"]
-    # return simbolo.islower() or simbolo == "ε" or simbolo in terminales
     return simbolo not in producciones and simbolo != "ε" 
 
 def calcularFirst(simbolo: str, producciones: dict) -> set:

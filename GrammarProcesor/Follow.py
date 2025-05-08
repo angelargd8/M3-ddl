@@ -12,23 +12,23 @@ y para construir la tabla de parsing LL(1)
 follows = defaultdict(set)
 
 
-def calcularFollow(gramatica: str, firsts: dict) -> dict:
-    global diccionarioProducciones
-    diccionarioProducciones = diccionarioForFolow(gramatica)
+def calcularFollow(producciones: dict, firsts: dict) -> dict:
+    # global diccionarioProducciones
+    # diccionarioProducciones = diccionarioForFolow(gramatica)
 
     # Inicializar FOLLOW con símbolo inicial
-    simbolo_inicial = list(diccionarioProducciones.keys())[0]
+    simbolo_inicial = list(producciones.keys())[0]
     follows[simbolo_inicial].add("$")
 
     cambiado = True
     while cambiado:
         cambiado = False
-        for A in diccionarioProducciones:
-            for produccion in diccionarioProducciones[A]:
+        for A in producciones:
+            for produccion in producciones[A]:
                 simbolos = tokenizeProduccion(produccion)
                 for i in range(len(simbolos)):
                     B = simbolos[i]
-                    if not IsTerminal(B):
+                    if not IsTerminal(B,producciones):
 
                         # B está al final: FOLLOW(A) ⊆ FOLLOW(B)
                         if i == len(simbolos) - 1:
@@ -44,7 +44,7 @@ def calcularFollow(gramatica: str, firsts: dict) -> dict:
 
                         beta = simbolos[i + 1 :]
                         for simbolo_beta in beta:
-                            if IsTerminal(simbolo_beta):
+                            if IsTerminal(simbolo_beta,producciones):
                                 primero_de_beta.add(simbolo_beta)
                                 break
                             primero = firsts[simbolo_beta]

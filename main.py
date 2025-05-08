@@ -26,9 +26,9 @@ def main():
     first = First(producciones)
     # print(first)
 
-    # # calcularFollow
-    # follow = calcularFollow(gramatica, first)
-    # print(follow)
+    # calcularFollow
+    follow = calcularFollow(producciones, first)
+    print(follow)
 
     # #-- automaton builder--
 
