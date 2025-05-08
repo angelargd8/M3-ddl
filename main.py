@@ -8,7 +8,7 @@ def main():
     # gramatica = leerArchivo("cfg.txt")
 
     #agregar validacion de archivo y que sean varios xd
-    archivo = "./yapar/slr-4.yalp"
+    archivo = "./yapar/slr-1.yalp"
     tokens, producciones = leerYapar(archivo)
     
     print("//// Tokens: ////")
@@ -21,10 +21,10 @@ def main():
             print(f"{no_terminal} -> {' '.join(cuerpo)}")
 
 
-    # #---grammar procesor--
-    # # calcularFirst
-    # first = First(gramatica)
-    # # print(first)
+    #---grammar procesor--
+    # calcularFirst
+    first = First(producciones)
+    # print(first)
 
     # # calcularFollow
     # follow = calcularFollow(gramatica, first)

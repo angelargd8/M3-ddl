@@ -50,54 +50,42 @@ def tokenizeProduccion(simbolo: str) -> List[str]:
     return tokens
 
 
-def IsTerminal(simbolo: str) -> bool:
+def IsTerminal(simbolo: str, producciones: dict) -> bool:
 
-    if simbolo in diccionarioProducciones:
-        return False #es un no terminal porque tiene producciones
+    # if simbolo in diccionarioProducciones:
+    #     return False #es un no terminal porque tiene producciones
     
-    # Definir los terminales y no terminales
-    terminales = ["*", "(", ")", "{", "}", "[", "]", "|", "+", "?", "ε"]
-    return simbolo.islower() or simbolo == "ε" or simbolo in terminales
+    # # Definir los terminales y no terminales
+    # terminales = ["*", "(", ")", "{", "}", "[", "]", "|", "+", "?", "ε"]
+    # return simbolo.islower() or simbolo == "ε" or simbolo in terminales
+    return simbolo not in producciones and simbolo != "ε" 
 
-
-def calcularFirst(simbolo: str) -> set:
+def calcularFirst(simbolo: str, producciones: dict) -> set:
     # print("===================================")
     # print("Calculando FIRST de: " + str(simbolo) )
 
-    if IsTerminal(simbolo):
-        # print("Es terminal " + str(simbolo) )
-        # return simbolo
+    if IsTerminal(simbolo, producciones):
+        print("Es terminal " + str(simbolo) )
         return set([simbolo])
 
     if simbolo in firsts and firsts[simbolo]:
         # print("Ya calculado FIRST de: " + str(simbolo) )
         return firsts[simbolo]
 
-    for prod in diccionarioProducciones[simbolo]:
-        # print("Produccion: " + str(prod) )
-        produccion = tokenizeProduccion(prod)
-        # print("Produccion tokenizada: " + str(produccion) )
+    for produccion in producciones[simbolo]:
+        # print("Produccion: " + str(produccion) )
         i = 0
         while i < len(produccion):
             simbolo_actual = produccion[i]
-            # print("Simbolo actual: " + str(simbolo_actual) )
             # print("Simbolo actual: " + str(simbolo_actual) )
 
             if simbolo_actual == simbolo:
                 break # evitar bucle infinito
 
-            #para evitar el bucle infinito
-            if simbolo_actual not in diccionarioProducciones:
-                #es un terminal no reconocido como id, o simbolo mal definido
-                firsts[simbolo].add(simbolo_actual)
-                break
+            #calcular el first del simbolo actual 
+            first_actual = calcularFirst(simbolo_actual, producciones)
 
-
-            if IsTerminal(simbolo_actual):
-                firsts[simbolo].add(simbolo_actual)
-                break
-
-            firsts[simbolo].update(calcularFirst(simbolo_actual))
+            firsts[simbolo].update(first_actual - {"ε"}) #agregar el first al conjunto de firsts del simbolo            
 
             if "ε" not in firsts[simbolo]:
                 break
@@ -139,13 +127,12 @@ def diccionarioForFolow(gramatica: str) -> dict:
     return producciones
 
 
-def First(gramatica: str) -> dict:
-    global diccionarioProducciones
-    diccionarioProducciones = diccionarioGramatica(gramatica)
+def First(producciones: str) -> dict:
+    # global diccionarioProducciones
+    # diccionarioProducciones = diccionarioGramatica(gramatica)
 
-    for no_terminal in diccionarioProducciones:
-
-        calcularFirst(no_terminal)
+    for no_terminal in producciones:
+        calcularFirst(no_terminal, producciones)
 
     print("\nTabla de FIRST:")
     print("===================================")
