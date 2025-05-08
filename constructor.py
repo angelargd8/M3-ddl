@@ -1,5 +1,6 @@
 import os
 from typing import List, Union
+from collections import defaultdict
 
 # leer el archivo
 
@@ -25,3 +26,49 @@ def leerArchivo(file: str) -> Union[List[str], str]:
         return "El archivo no fue encontrado"
     except IOError:
         return "Error al leer el archivo"
+
+
+def leerYapar(filepath: str):
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        lines = f.read().split("\n")
+
+
+    tokens =set()
+    producciones = defaultdict(list)
+    current_non_terminal = None
+
+
+    for line in lines:
+        line = line.strip()
+
+        #ignorar las vacias y comentarios
+        if not line or line.startswith("/*") or line.startswith("//"):
+            continue
+
+        #detectar tokens
+        if line.startswith("%token"):
+            tokens.update(line.replace("%token", "").split())
+            continue
+
+        #detectar nuevas reglas, como expresiones
+        if line.endswith(":"):
+            current_non_terminal = line[:-1].strip()
+            continue
+
+        #detectar producciones
+        if current_non_terminal and ("|" in line or ";" in line or line):
+            # Si hay un punto y coma, eliminarlo
+            if ";" in line:
+                line = line.replace(";", "")
+
+            partes = [partes.strip() for partes in line.split("|")]
+
+            for parte in partes:
+                symbols = parte.split()
+                if symbols:
+                    producciones[current_non_terminal].append(symbols)
+
+    return tokens, producciones
+
+    

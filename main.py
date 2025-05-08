@@ -5,21 +5,35 @@ from GrammarProcesor.Follow import *
 
 def main():
 
-    gramatica = leerArchivo("cfg.txt")
+    # gramatica = leerArchivo("cfg.txt")
 
-    #---grammar procesor--
-    # calcularFirst
-    first = First(gramatica)
-    # print(first)
+    #agregar validacion de archivo y que sean varios xd
+    archivo = "./yapar/slr-4.yalp"
+    tokens, producciones = leerYapar(archivo)
+    
+    print("//// Tokens: ////")
+    for token in tokens:
+        print(token)
 
-    # calcularFollow
-    follow = calcularFollow(gramatica, first)
-    print(follow)
+    print("//// Producciones: ////")
+    for no_terminal in producciones: 
+        for cuerpo in producciones[no_terminal]:
+            print(f"{no_terminal} -> {' '.join(cuerpo)}")
 
-    #-- automaton builder--
 
-    #construir items LR(0)
-    #calculo de closure(I)
-    #calculo de goto(I,X)
+    # #---grammar procesor--
+    # # calcularFirst
+    # first = First(gramatica)
+    # # print(first)
+
+    # # calcularFollow
+    # follow = calcularFollow(gramatica, first)
+    # print(follow)
+
+    # #-- automaton builder--
+
+    # #construir items LR(0)
+    # #calculo de closure(I)
+    # #calculo de goto(I,X)
 
 main()
