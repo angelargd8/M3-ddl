@@ -5,8 +5,6 @@ from GrammarProcesor.Follow import *
 
 def main():
 
-    # gramatica = leerArchivo("cfg.txt")
-
     #agregar validacion de archivo y que sean varios xd
     archivo = "./yapar/slr-1.yalp"
     tokens, producciones = leerYapar(archivo)
@@ -24,14 +22,12 @@ def main():
     #---grammar procesor--
     # calcularFirst
     first = First(producciones)
-    # print(first)
 
     # calcularFollow
     follow = calcularFollow(producciones, first)
     print(follow)
 
     # #-- automaton builder--
-
     # #construir items LR(0)
     # #calculo de closure(I)
     # #calculo de goto(I,X)

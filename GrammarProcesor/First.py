@@ -15,41 +15,6 @@ producciones = defaultdict(set)
 firsts = defaultdict(set)
 
 
-def tokenizeProduccion(simbolo: str) -> List[str]:
-    tokens = []
-    i = 0
-    while i < len(simbolo):
-
-        #  Terminal
-        if simbolo[i].islower():
-            buffer = simbolo[i]
-            i += 1
-            while i < len(simbolo) and simbolo[i].islower():
-                buffer += simbolo[i]
-                i += 1
-            tokens.append(buffer)
-
-        # No terminales
-        elif simbolo[i].isupper():
-            buffer = simbolo[i]
-            i += 1
-
-            # si tiene una comilla
-            while i < len(simbolo) and simbolo[i] == "'":
-                buffer += simbolo[i]
-                i += 1
-            tokens.append(buffer)
-        elif simbolo[i] == "'":
-
-            # por si hay una comilla sola
-            tokens.append("'")
-            i += 1
-        else:
-            tokens.append(simbolo[i])
-            i += 1
-    return tokens
-
-
 def IsTerminal(simbolo: str, producciones: dict) -> bool:
     # # Definir los terminales y no terminales
     return simbolo not in producciones and simbolo != "ε" 
@@ -90,6 +55,57 @@ def calcularFirst(simbolo: str, producciones: dict) -> set:
     return firsts[simbolo]
 
 
+
+def First(producciones: str) -> dict:
+    # global diccionarioProducciones
+    # diccionarioProducciones = diccionarioGramatica(gramatica)
+
+    for no_terminal in producciones:
+        calcularFirst(no_terminal, producciones)
+
+    print("\nTabla de FIRST:")
+    print("===================================")
+    for no_terminal in firsts:
+        print(f"FIRST({no_terminal}) = {firsts[no_terminal]}")
+
+    return firsts
+
+
+#========================= Funciones usadas en el laboratorio, pero que ya no se usan: ========================
+def tokenizeProduccion(simbolo: str) -> List[str]:
+    tokens = []
+    i = 0
+    while i < len(simbolo):
+
+        #  Terminal
+        if simbolo[i].islower():
+            buffer = simbolo[i]
+            i += 1
+            while i < len(simbolo) and simbolo[i].islower():
+                buffer += simbolo[i]
+                i += 1
+            tokens.append(buffer)
+
+        # No terminales
+        elif simbolo[i].isupper():
+            buffer = simbolo[i]
+            i += 1
+
+            # si tiene una comilla
+            while i < len(simbolo) and simbolo[i] == "'":
+                buffer += simbolo[i]
+                i += 1
+            tokens.append(buffer)
+        elif simbolo[i] == "'":
+
+            # por si hay una comilla sola
+            tokens.append("'")
+            i += 1
+        else:
+            tokens.append(simbolo[i])
+            i += 1
+    return tokens
+
 # poner los elementos en eun diccionario
 def diccionarioGramatica(gramatica: str) -> dict:
     producciones = defaultdict(set)
@@ -119,18 +135,3 @@ def diccionarioForFolow(gramatica: str) -> dict:
     for no_terminal, expansions in producciones.items():
         print(f"{no_terminal} -> {', '.join(expansions)}")
     return producciones
-
-
-def First(producciones: str) -> dict:
-    # global diccionarioProducciones
-    # diccionarioProducciones = diccionarioGramatica(gramatica)
-
-    for no_terminal in producciones:
-        calcularFirst(no_terminal, producciones)
-
-    print("\nTabla de FIRST:")
-    print("===================================")
-    for no_terminal in firsts:
-        print(f"FIRST({no_terminal}) = {firsts[no_terminal]}")
-
-    return firsts
