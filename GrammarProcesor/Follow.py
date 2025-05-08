@@ -1,6 +1,13 @@
 from collections import defaultdict
 from GrammarProcesor.First import IsTerminal, calcularFirst, diccionarioForFolow, tokenizeProduccion
 
+"""
+El conjunto FOLLOW se usa para saber que tokens pueden venir luego de un simbolo no terminal
+en cualquier derivacion valida
+
+Sirve para saber cuando se debe de aplicar una produccion derivada de epsolin
+y para construir la tabla de parsing LL(1) 
+"""
 
 follows = defaultdict(set)
 

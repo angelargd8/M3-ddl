@@ -3,6 +3,14 @@ from typing import List, Tuple
 from constructor import *
 
 
+"""
+El conjunto FIRST sirve para saber que tokens pueden aparecer
+al inicio de una cadena derivada desde un simbolo terminal o no terminal
+
+Sirve para construir la tabla de parsing y decidir que produccion usar cuando se lee un token
+
+"""
+
 producciones = defaultdict(set)
 firsts = defaultdict(set)
 

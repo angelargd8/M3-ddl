@@ -9,8 +9,9 @@ def main():
     # calcularFirst
     first = First(gramatica)
     # print(first)
-    follow = calcularFollow(gramatica, first)
+
     # calcularFollow
+    follow = calcularFollow(gramatica, first)
     print(follow)
 
 
