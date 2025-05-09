@@ -12,6 +12,7 @@ def Closure(producciones: dict) -> set:
 
     simbolo_inicial = list(producciones.keys())[0]  # Obtiene el primer símbolo no terminal
     simbolo_aumentado = simbolo_inicial + "'"  # Aumenta el símbolo inicial
+    # print(f"Simbolo inicial: {simbolo_inicial}") 
 
     #crear produccion aumentada
     producciones[simbolo_aumentado] = [[simbolo_inicial]]  # Agrega la producción aumentada al diccionario
@@ -23,7 +24,7 @@ def Closure(producciones: dict) -> set:
     agregado = True  # Bandera para controlar si se han agregado nuevos items
 
     while agregado:
-        print("bandera de agregado ")
+        # print("bandera de agregado ")
         agregado = False  # Reinicia la bandera
         items_nuevos = set()  # Conjunto para almacenar nuevos items
 
@@ -36,16 +37,19 @@ def Closure(producciones: dict) -> set:
                     for produccion in producciones[simbolo]:
                         item = (simbolo, tuple(produccion), 0)  # Crea un nuevo item con el no terminal y su producción
                         if item not in cerrado:  # Verifica si el item no está en el conjunto
+                            # print(f"Agregando item: {item}")
                             items_nuevos.add(item)  # Agrega el item al conjunto de nuevos items
 
         if items_nuevos:  # Si hay nuevos items
+            # print(f"Agregando {len(items_nuevos)} items nuevos al conjunto cerrado")
             cerrado.update(items_nuevos)
             agregado = True
 
-    # print(f"Conjunto cerrado: {cerrado}")  # Imprime el conjunto cerrado
+    print(f"\n---------------\nConjunto cerrado: {cerrado}")  # Imprime el conjunto cerrado
     return cerrado  # Devuelve el conjunto cerrado final
 
 
+#esta funcion la sugerio la ia
 def imprimir_items(items: set):
     print("\n//// Items LR(0) ////")
     for (nt, cuerpo, punto) in items:

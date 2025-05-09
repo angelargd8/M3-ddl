@@ -24,7 +24,7 @@ def calcularFirst(simbolo: str, producciones: dict) -> set:
     # print("Calculando FIRST de: " + str(simbolo) )
 
     if IsTerminal(simbolo, producciones):
-        print("Es terminal " + str(simbolo) )
+        # print("Es terminal " + str(simbolo) )
         return set([simbolo])
 
     if simbolo in firsts and firsts[simbolo]:
