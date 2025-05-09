@@ -1,12 +1,13 @@
 from GrammarProcesor.First import *
 from constructor import *
 from GrammarProcesor.Follow import *
+from AutomatonBuilder.Closure import *
 
 
 def main():
 
     #agregar validacion de archivo y que sean varios xd
-    archivo = "./yapar/slr-4.yalp"
+    archivo = "./yapar/slr-1.yalp"
     tokens, producciones = leerYapar(archivo)
     
     print("//// Tokens: ////")
@@ -27,9 +28,11 @@ def main():
     follow = calcularFollow(producciones, first)
     print(follow)
 
-    # #-- automaton builder--
-    # #construir items LR(0)
-    # #calculo de closure(I)
-    # #calculo de goto(I,X)
+    #-- automaton builder--
+    #-construir items LR(0)
+    # 1. calculo de closure(I) del item
+    I0 = Closure(producciones)
+    imprimir_items(I0)
+    # 2. calculo de goto(I,X)
 
 main()
