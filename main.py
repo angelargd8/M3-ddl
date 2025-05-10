@@ -30,6 +30,7 @@ def main():
     print(follow)
 
     #-- automaton builder--
+    # automata LR(0)
     estados, transiciones = ConstruirAutomata(producciones) 
 
     

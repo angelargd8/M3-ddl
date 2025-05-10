@@ -1,6 +1,21 @@
 from AutomatonBuilder.Closure import *
 from AutomatonBuilder.Goto import *
 
+"""
+
+ejemplo de la clase:
+void items(G'){
+    C = { Clousure(I0) }
+    repeat
+        for each set of items in C:
+        for each grammar symbol X:
+            if goto(I, X) is not empty and not in C:
+                add goto(I, X) to C
+    until no new items are addes to C on a round
+
+}
+
+"""
 
 def ConstruirAutomata(producciones: dict) -> dict:
 
