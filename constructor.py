@@ -69,6 +69,8 @@ def leerYapar(filepath: str):
                 if symbols:
                     producciones[current_non_terminal].append(symbols)
 
+    tokens = sorted(set(tokens))  # Ordenar los tokens, esto es para que cada ves que se repita, sea en el mismo orden
+
     return tokens, producciones
 
     

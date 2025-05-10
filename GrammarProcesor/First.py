@@ -65,7 +65,7 @@ def First(producciones: str) -> dict:
 
     print("\nTabla de FIRST:")
     print("===================================")
-    for no_terminal in firsts:
+    for no_terminal in sorted(firsts):
         print(f"FIRST({no_terminal}) = {firsts[no_terminal]}")
 
     return firsts

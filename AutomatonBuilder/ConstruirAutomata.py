@@ -85,7 +85,7 @@ def ConstruirAutomata(producciones: dict) -> dict:
         print(f"δ (q{origen_num}, '{simbolo}') → q{destino_num}")
 
 
-    return estados, transiciones
+    return estados, transiciones, estados_id
            
 
 
@@ -106,4 +106,4 @@ def obtener_simbolos_gramaticales(producciones: dict) -> set:
         for cuerpo in reglas:
             simbolos.update(cuerpo)  # Agrega los símbolos del cuerpo de la producción 
     
-    return simbolos
+    return sorted(simbolos)
