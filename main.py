@@ -1,7 +1,8 @@
 from GrammarProcesor.First import *
 from constructor import *
 from GrammarProcesor.Follow import *
-from AutomatonBuilder.Closure import *
+from AutomatonBuilder.ConstruirAutomata import *
+
 
 
 def main():
@@ -29,10 +30,7 @@ def main():
     print(follow)
 
     #-- automaton builder--
-    #-construir items LR(0)
-    # 1. calculo de closure(I) del item
-    I0 = Closure(producciones)
-    imprimir_items(I0)
-    # 2. calculo de goto(I,X)
+    estados, transiciones = ConstruirAutomata(producciones) 
 
+    
 main()

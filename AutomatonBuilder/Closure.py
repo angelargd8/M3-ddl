@@ -6,20 +6,9 @@ Salida: I0 que es el conjunto expandido con todos los items que derivan de los n
 """
 
 
-def Closure(producciones: dict) -> set:
+def Closure(items: set, producciones: dict) -> set:
 
-    cerrado = set()  # Inicializa el conjunto cerrado 
-
-    simbolo_inicial = list(producciones.keys())[0]  # Obtiene el primer símbolo no terminal
-    simbolo_aumentado = simbolo_inicial + "'"  # Aumenta el símbolo inicial
-    # print(f"Simbolo inicial: {simbolo_inicial}") 
-
-    #crear produccion aumentada
-    producciones[simbolo_aumentado] = [[simbolo_inicial]]  # Agrega la producción aumentada al diccionario
-
-    #crear el item inicial 
-    cerrado.add((simbolo_aumentado, (simbolo_inicial,), 0) ) # Agrega el item inicial al conjunto cerrado
-
+    cerrado = set(items)  # Inicializa el conjunto cerrado 
 
     agregado = True  # Bandera para controlar si se han agregado nuevos items
 
@@ -45,13 +34,13 @@ def Closure(producciones: dict) -> set:
             cerrado.update(items_nuevos)
             agregado = True
 
-    print(f"\n---------------\nConjunto cerrado: {cerrado}")  # Imprime el conjunto cerrado
+    # print(f"\n---------------\nConjunto cerrado: {cerrado}")  # Imprime el conjunto cerrado
     return cerrado  # Devuelve el conjunto cerrado final
 
 
 #esta funcion la sugerio la ia
 def imprimir_items(items: set):
-    print("\n//// Items LR(0) ////")
+    # print("\n//// Items ////")
     for (nt, cuerpo, punto) in items:
         antes_punto = " ".join(cuerpo[:punto])
         despues_punto = " ".join(cuerpo[punto:])
