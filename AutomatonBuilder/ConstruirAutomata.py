@@ -63,15 +63,29 @@ def ConstruirAutomata(producciones: dict) -> dict:
             goto_result = goto(I, simbolo_gramatical, producciones)
             # print(f"goto_result: {goto_result}")
 
-            if goto_result and goto_result not in estados:
-                estados.append(goto_result)
-                
-                pendientes.append(goto_result)
-
             if goto_result:
-                transiciones[(id(I), simbolo_gramatical)] = id(goto_result)
+                existente = encontrar_estado_id_por_contenido(estados, goto_result)
 
-            estados_id[id(goto_result)] = len(estados) -1 # Asigna un ID al nuevo estado
+                if existente is None:
+                    estados.append(goto_result)  # Agrega el nuevo estado a la lista de estados
+                    nuevo_id = len(estados) - 1  # Asigna un ID al nuevo estado
+                    estados_id[id(goto_result)] = nuevo_id  # Asigna el ID al nuevo estado
+                    pendientes.append(goto_result)  # Agrega el nuevo estado a la lista de pendientes
+                    destino_id = id(goto_result) 
+                else: 
+                    destino_id = id(estados[existente])
+                
+                transiciones[(id(I), simbolo_gramatical)] = destino_id  # Agrega la transición al diccionario de transiciones
+
+            # if goto_result and goto_result not in estados:
+            #     estados.append(goto_result)
+                
+            #     pendientes.append(goto_result)
+
+            # if goto_result:
+            #     transiciones[(id(I), simbolo_gramatical)] = id(goto_result)
+
+            # estados_id[id(goto_result)] = len(estados) -1 # Asigna un ID al nuevo estado
 
     print("\n===== ESTADOS LR(0) =====")
     for i, estado in enumerate(estados):
@@ -87,6 +101,12 @@ def ConstruirAutomata(producciones: dict) -> dict:
 
     return estados, transiciones, estados_id
            
+
+def encontrar_estado_id_por_contenido(estados, estado_nuevo):
+    for i, estado in enumerate(estados):
+        if estado == estado_nuevo:
+            return i
+    return None
 
 
 def obtener_simbolos_gramaticales(producciones: dict) -> set:
