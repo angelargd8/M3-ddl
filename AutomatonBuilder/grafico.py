@@ -1,6 +1,6 @@
 from graphviz import Digraph
 
-def graficar_automata(estados, transiciones, estados_id):
+def graficar_automata(estados, transiciones, estados_id, estado_aceptacion):
     dot = Digraph(comment="Automata LR(0)")
 
     # Crear nodos de estados con sus items
@@ -11,6 +11,12 @@ def graficar_automata(estados, transiciones, estados_id):
             despues = " ".join(cuerpo[punto:])
             label += f"{nt} → {antes} • {despues}\n"
         dot.node(f"I{i}", label=label, shape="box", fontname="Courier")
+    
+    # Crear flecha de estado de aceptación
+    if estado_aceptacion:
+        dot.node("ACCEPT", shape="doublecircle", style="filled", color="lightgray")
+        dot.edge(f"I{estados_id[estado_aceptacion]}", "ACCEPT", label="$")
+
 
     # Crear transiciones
     for (origen_id, simbolo), destino_id in transiciones.items():

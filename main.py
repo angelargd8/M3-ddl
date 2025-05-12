@@ -32,8 +32,8 @@ def main():
 
     #-- automaton builder--
     # automata LR(0)
-    estados, transiciones, estados_id = ConstruirAutomata(producciones) 
-    graficar_automata(estados, transiciones, estados_id)
+    estados, transiciones, estados_id, estado_aceptacion = ConstruirAutomata(producciones) 
+    graficar_automata(estados, transiciones, estados_id, estado_aceptacion)
 
     
 main()

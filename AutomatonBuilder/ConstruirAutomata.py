@@ -42,10 +42,12 @@ def ConstruirAutomata(producciones: dict) -> dict:
     
 
     # 2. calculo de goto(I,X)
-    print(f"\n//// goto ////")
+    print(f"\n//// -- goto -- ////")
     estados.append(I0)
     pendientes = [I0]  # Lista de conjuntos de items pendientes
     estados_id[id(I0)] = 0
+
+    estado_aceptacion = None
 
     # repeat
     # for each set of items in C:
@@ -58,10 +60,21 @@ def ConstruirAutomata(producciones: dict) -> dict:
         I = pendientes.pop(0)
         # print(f"\nConjunto de items pendiente: {I}")
 
+        # estado de aceptacion  
+        for item in I:
+            nt, cuerpo, punto = item
+            if nt == simbolo_aumentado and punto == len(cuerpo):
+                estado_sum = estados_id.get(id(I), '?')
+                estado_aceptacion = id(I)
+                # print(f"/// Estado de aceptación: q{estado_sum} ///")
+                # print(f"Producción: {nt} → {' '.join(cuerpo)}")
+
+
         for simbolo_gramatical in obtener_simbolos_gramaticales(producciones):
             # print(f"Simbolo: {simbolo_gramatical}")
             goto_result = goto(I, simbolo_gramatical, producciones)
             # print(f"goto_result: {goto_result}")
+
 
             if goto_result:
                 existente = encontrar_estado_id_por_contenido(estados, goto_result)
@@ -88,8 +101,11 @@ def ConstruirAutomata(producciones: dict) -> dict:
         destino_num = estados_id.get(destino_id, '?')
         print(f"δ (q{origen_num}, '{simbolo}') → q{destino_num}")
 
+    print(f"\nEstado de aceptación: q{estados_id[estado_aceptacion]}")
+    print(f"Producción: {simbolo_aumentado} → {' '.join(producciones[simbolo_aumentado][0])}")
 
-    return estados, transiciones, estados_id
+
+    return estados, transiciones, estados_id, estado_aceptacion
            
 
 def encontrar_estado_id_por_contenido(estados, estado_nuevo):
