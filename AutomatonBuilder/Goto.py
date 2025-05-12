@@ -33,7 +33,7 @@ def goto(I: set, X: str, producciones: dict) -> set:
 
     #aplica el closure a los nuevos items
     nuevos_items = Closure(nuevos_items, producciones)
-    return nuevos_items  
+    return frozenset(nuevos_items)  
 
 
 

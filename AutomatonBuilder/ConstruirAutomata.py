@@ -77,16 +77,6 @@ def ConstruirAutomata(producciones: dict) -> dict:
                 
                 transiciones[(id(I), simbolo_gramatical)] = destino_id  # Agrega la transición al diccionario de transiciones
 
-            # if goto_result and goto_result not in estados:
-            #     estados.append(goto_result)
-                
-            #     pendientes.append(goto_result)
-
-            # if goto_result:
-            #     transiciones[(id(I), simbolo_gramatical)] = id(goto_result)
-
-            # estados_id[id(goto_result)] = len(estados) -1 # Asigna un ID al nuevo estado
-
     print("\n===== ESTADOS LR(0) =====")
     for i, estado in enumerate(estados):
         print(f"\nEstado {i}:")
