@@ -104,8 +104,8 @@ def ConstruirAutomata(producciones: dict) -> dict:
     print(f"\nEstado de aceptación: q{estados_id[estado_aceptacion]}")
     print(f"Producción: {simbolo_aumentado} → {' '.join(producciones[simbolo_aumentado][0])}")
 
-
-    return estados, transiciones, estados_id, estado_aceptacion
+    
+    return estados, transiciones, estados_id, estado_aceptacion, simbolo_aumentado
            
 
 def encontrar_estado_id_por_contenido(estados, estado_nuevo):
