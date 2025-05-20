@@ -84,6 +84,8 @@ def TablaSLR(producciones, no_terminal,  estados, transiciones, estados_id, esta
                                 if simbolo in action[estado_idx]:
                                     #validacion si ya existe alguna accion para el estado y simvolo, como shift/reduce o reduce/reduce 
                                     print("conflicto de en action[{estado_idx}][{simbolo}] ")
+                                    #detener el proceso 
+                                    break
                                 else:
                                     action[estado_idx][simbolo] = f'r{num}'
 
