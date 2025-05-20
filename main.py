@@ -56,15 +56,6 @@ def main():
     if estado_aceptacion:
         if '$' not in terminales: 
             terminales.append('$')
-    
-    # print("\n====== TRANSICIONES GOTO ======")
-    # for (origen_id, simbolo), destino_id in transiciones.items():
-    #     if simbolo in no_terminales:
-    #         print(f"GOTO(q{estados_id[origen_id]}, '{simbolo}') = q{estados_id[destino_id]}")
-        
-    # print("\n>>> GOTO :")
-    # for estado, trans in goto.items():
-    #     print(f"Estado {estado}: {trans}")
 
     imprimirTablas(action, goto, terminales, no_terminales)
 

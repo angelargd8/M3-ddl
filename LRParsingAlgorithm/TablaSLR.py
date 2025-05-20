@@ -94,7 +94,6 @@ def TablaSLR(producciones, no_terminal,  estados, transiciones, estados_id, esta
 def imprimirTablas(action, goto, terminales, no_terminales):
     # Encabezado
     print("\n")
-    # print("-" * 200)
     # lo esto lo dio nuestro cuarto integrante, gepeto
     header = f"{'STATE':^6}|" + "".join(f"{t:^6}|" for t in terminales) + "||" + "".join(f"{nt:^6}|" for nt in no_terminales)
     
