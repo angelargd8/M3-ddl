@@ -12,20 +12,12 @@ def main():
     #agregar validacion de archivo y que sean varios xd
     archivo = "./yapar/slr-1.yalp"
     tokens, producciones = leerYapar(archivo)
-    
-    print("//// Tokens: ////")
-    for token in tokens:
-        print(token)
+
+    print("\n==== TOKENS ====")
+    print(tokens)
 
     no_terminales = list(producciones.keys())
     terminales = sorted(set(tokens))  #tokens que no son terminales
-
-    print("//// Producciones: ////")
-    for no_terminal in sorted(producciones): 
-
-        for cuerpo in sorted(producciones[no_terminal]):
-            print(f"{no_terminal} → {' '.join(cuerpo)}")
-
 
     #---grammar procesor--
     # calcularFirst
@@ -40,16 +32,6 @@ def main():
     estados, transiciones, estados_id, estado_aceptacion, simbolo_aumentado = ConstruirAutomata(producciones) 
     graficar_automata(estados, transiciones, estados_id, estado_aceptacion)
 
-    #-- LR-Parsing Algorithm--
-    #tomar de entrada el conjunto canonico de items LR0
-    #y se va a transformar en una estructura de datos, para simular el algoritmo de parsing
-    #se usa una pila para simular el automata de pila
-    #va a consumir token tras token 
-    #consume token tras token y usa la pila y consulta la table slr para determinar la accion que debe de tomar el analizador
-    #la tabla slr accion|goto
-    #la salida es si: si la secuencia de tokens que tenemos en la entrada construye una oracion valida a partir de de la gramatica libre de contexto
-    #la salida es no: si tenemos errores sintacticos, es cuando la tabla slr no se capaz de decirnos que hacer
-    
     # 1. tabla slr
     action, goto = TablaSLR(producciones, no_terminales, estados, transiciones, estados_id, estado_aceptacion, simbolo_aumentado, follow)
 
@@ -59,7 +41,24 @@ def main():
 
     imprimirTablas(action, goto, terminales, no_terminales)
 
+    #-- LR-Parsing Algorithm--
+    print("\n==== Prueba de Parsing ====")
+    # Solo se pueden usar PLUS y TIMES, con ( ) y solo ID
+    # ['ID', 'LPAREN', 'PLUS', 'RPAREN', 'TIMES']
+    tokens_prueba_yalp1 = ["ID", "PLUS", "ID", "TIMES", "LPAREN", "ID", "PLUS", "ID", "RPAREN"]
+    # Se pueden usar NUMBER, MINUS y DIV ademas de los anteriores
+    # ['DIV', 'ID', 'LPAREN', 'MINUS', 'NUMBER', 'PLUS', 'RPAREN', 'TIMES']
+    tokens_prueba_yalp2 = ["ID", "PLUS", "NUMBER", "DIV", "LPAREN", "NUMBER", "MINUS", "NUMBER", "RPAREN"]
+    # solo PLUS y TIMES y ( ) pero con number en minuscula y sin ID
+    # ['LPAREN', 'NUMBER', 'PLUS', 'RPAREN', 'TIMES']
+    tokens_prueba_yalp3 = ["number", "PLUS", "LPAREN", "number" , "TIMES", "number", "RPAREN"]
+    # Creo que tiene que ser asignaciones nada mas, como A = 3 + (4 * 5) o cosas asi
+    # ['ASSIGNOP', 'DIV', 'EQ', 'ID', 'LPAREN', 'LT', 'MINUS', 'NUMBER', 'PLUS', 'RPAREN', 'SEMICOLON', 'TIMES']
+    tokens_prueba_yalp4 = [ "ID", "ASSIGNOP", "NUMBER", "PLUS", "NUMBER", "TIMES", "LPAREN", "NUMBER", "MINUS", "NUMBER", "RPAREN"]
 
+    
+    resultado = ejecutarParser(tokens_prueba_yalp1, action, goto, producciones)
 
+    print(f"\n Resultado del análisis: {'-----ACEPTEADA-----' if resultado else '-----RECHAZADA-----'}")
 
 main()
