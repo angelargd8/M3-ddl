@@ -32,6 +32,8 @@ def main():
     estados, transiciones, estados_id, estado_aceptacion, simbolo_aumentado = ConstruirAutomata(producciones) 
     graficar_automata(estados, transiciones, estados_id, estado_aceptacion)
 
+    #-- LR-Parsing Algorithm--
+
     # 1. tabla slr
     action, goto = TablaSLR(producciones, no_terminales, estados, transiciones, estados_id, estado_aceptacion, simbolo_aumentado, follow)
 
@@ -41,7 +43,7 @@ def main():
 
     imprimirTablas(action, goto, terminales, no_terminales)
 
-    #-- LR-Parsing Algorithm--
+    #2. LR Parsing Program
     print("\n==== Prueba de Parsing ====")
     # Solo se pueden usar PLUS y TIMES, con ( ) y solo ID
     # ['ID', 'LPAREN', 'PLUS', 'RPAREN', 'TIMES']
