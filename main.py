@@ -41,6 +41,7 @@ def main():
         if '$' not in terminales: 
             terminales.append('$')
 
+    print("\n==================== Tabla SLR (Action | goto) ============================")
     imprimirTablas(action, goto, terminales, no_terminales)
 
     #2. LR Parsing Program
