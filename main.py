@@ -59,6 +59,7 @@ def consumidor(action, goto, producciones):
             tokens.append(token)
         else:
             tokens.append(token)
+        print("--",token)
 
         while True:
             estado_actual = stack[-1]
@@ -165,7 +166,7 @@ def main():
             print("No se pudo encontrar el archivo")
     else:
 
-        contenido_yal = leerArchivo_yalex("yalDocs/slr-2.yal")
+        contenido_yal = leerArchivo_yalex("yalDocs/slr-4.yal")
         if contenido_yal:
             print(f"\nArchivo Yal leído correctamente\n")
 
@@ -173,9 +174,6 @@ def main():
             tokens = yal.get_tokens()
             ignore= yal.get_ignore()
             
-            if "WHITESPACE" in tokens and "WS" not in tokens:
-                tokens["WS"] = tokens.pop("WHITESPACE")
-                ignore = ["WS" if x == "WHITESPACE" else x for x in ignore]
 
             print("[DEBUG] Tokens a ignorar definidos por el .yal:")
             print(ignore)
@@ -186,14 +184,11 @@ def main():
 
 
             lexical_automata = generar_afd_unificado(tokens)
-            for estado, token in lexical_automata.estado_a_token.items():
-                if token == "WHITESPACE":
-                    lexical_automata.estado_a_token[estado] = "WS"
-                    
+
             _serialize_automata(lexical_automata, "lexical_out")
 
     # agregar validacion de archivo y que sean varios xd
-    archivo = "./yapar/slr-2.yalp"
+    archivo = "./yapar/slr-4.yalp"
     tokens, producciones, ignorados_yalp = leerYapar(archivo)
 
     print("\n==== TOKENS IGNORADOS====")
@@ -236,12 +231,9 @@ def main():
     ignorados = list(set(ignorados_yalp + ignore))
 
     print("\n==== leyendo archivo... ====")
-    t = leerArchivo("./input/numbers_expressions.txt")
+    t = leerArchivo("./input/test_yalp4.txt")
 
 
-    for estado, token in lexical_automata.estado_a_token.items():
-        if token == "WHITESPACE":
-            lexical_automata.estado_a_token[estado] = "WS"
 
     # print("\n==== TODOS LOS TOKENS A IGNORAR ====")
     # print(ignorados)
