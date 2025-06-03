@@ -34,6 +34,7 @@ while (1){ /*repeat forever*/
 """
 
 def ejecutarParser(tokens, action, goto, producciones):
+
     """
     Ejecuta el algoritmo de parsing LR(0) utilizando una tabla SLR(1).
     

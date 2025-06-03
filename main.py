@@ -184,18 +184,25 @@ def main():
 
     print("\n==================== Tabla SLR (Action | goto) ============================")
     imprimirTablas(action, goto, terminales, no_terminales)
+   
+
 
     expresiones = leerExpresiones("./input/prueba.txt")
 
     for i, expr in enumerate(expresiones):
-        # print(f"\n========== Analizando expresion {i+1}: {expr}")
-        token_queue = queue.Queue()
-        hilo_p = threading.Thread(target=productor, args=(expr, lexical_automata, ignorados, token_queue))
-        hilo_c = threading.Thread(target=consumidor, args=(action, goto, producciones, token_queue))
-        hilo_p.start()
-        hilo_c.start()
-        hilo_p.join()
-        hilo_c.join()
+        # print(f"\n========== Analizando expresión {i+1}: {expr}")
+        tokens_lexicos = simular_texto(expr, lexical_automata)
 
+        # tomar la lista de [lexema, token] producidos por el  lexer y extrae solo el tipo de token,
+        # ignorando los tokens que están como ignorables
+        tokens_filtrados = [token for lexema, token in tokens_lexicos if token not in ignorados]
+
+        # Ejecutar parser
+        resultado = ejecutarParser(tokens_filtrados, action, goto, producciones)
+
+        if resultado:
+            print("✔ Expresión aceptada")
+        else:
+            print("✖ Expresión rechazada")
 main()
 
