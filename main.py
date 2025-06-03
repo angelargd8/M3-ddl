@@ -50,9 +50,9 @@ def simular_texto(texto: str, automata) -> List[List[str]]:
 def main():
 
 
-    opi = int(input(("1) Cargar Pickle \n2) Leer yal nuevo\n")))
+    opcion = int(input(("1) Cargar Pickle \n2) Leer yal nuevo\n")))
     lexical_automata = None
-    if opi == 1:
+    if opcion == 1:
         #  lectura del lexical automata
         lexical_automata = get_pickle_automata("./Yalex/out/lexical_out/lexicalAutomata.pkl")
         if lexical_automata:
