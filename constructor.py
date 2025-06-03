@@ -18,7 +18,8 @@ def leerArchivo(file: str) -> Union[List[str], str]:
         file_path = os.path.join(script_dir, file)
 
         with open(file_path, "r", encoding="utf-8") as f:
-            expresiones = f.read().split("\n")
+            # expresiones = f.read().split("\n")
+            expresiones = [line.rstrip("\n") for line in f]
 
         print(expresiones, type(expresiones))
         return expresiones
@@ -31,7 +32,8 @@ def leerArchivo(file: str) -> Union[List[str], str]:
 def leerYapar(filepath: str):
 
     with open(filepath, "r", encoding="utf-8") as f:
-        lines = f.read().split("\n")
+        # lines = f.read().split("\n")
+        lines = [line.rstrip("\n") for line in f]
 
 
     tokens = set()
