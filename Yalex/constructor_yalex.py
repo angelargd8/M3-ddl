@@ -32,7 +32,14 @@ def leerArchivo_yalex(file: str):
         file_path = os.path.join(script_dir, file)
 
         with open(file_path, "r", encoding="utf-8") as f:
-            contenido = f.read().strip()
+            contenido = ""
+            while True:
+                char = f.read(1)
+                if not char:
+                    break
+                contenido += char
+
+            contenido = contenido.strip()
             return contenido if contenido else None
 
     except FileNotFoundError:
