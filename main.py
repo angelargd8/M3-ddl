@@ -65,16 +65,20 @@ def consumidor(action, goto, producciones):
 
             accion = action.get(estado_actual, {}).get(simbolo_actual)
             if not accion:
-                print(f"Error sintáctico: no hay acción para estado {estado_actual} con símbolo '{simbolo_actual}'")
+                print("\n------- Error sintáctico:")
+                print(f"   → Estado actual: {estado_actual}")
+                print(f"   → Símbolo encontrado: '{simbolo_actual}'")
+                print(f"   → No hay acción definida en la tabla de parsing.")
                 return False
 
-            print(f"---[Estado {estado_actual}] Acción: {accion} con símbolo '{simbolo_actual}'")
+            print(f"--- [Estado {estado_actual}] Acción: {accion} con símbolo '{simbolo_actual}'")
 
             if accion.startswith('s'):
                 nuevo_estado = int(accion[1:])
+                print(f"✔ Shift: '{simbolo_actual}' → Estado {nuevo_estado}")
                 stack.append(nuevo_estado)
                 tokens.pop(0)
-                break  # Volver a esperar más tokens si es necesario
+                break  # Esperar más tokens si es necesario
 
             elif accion.startswith('r'):
                 num = int(accion[1:])
@@ -82,18 +86,29 @@ def consumidor(action, goto, producciones):
                 for _ in rhs:
                     stack.pop()
                 estado_actual = stack[-1]
-                goto_estado = goto[estado_actual][lhs]
-                stack.append(goto_estado)
+                goto_estado = goto.get(estado_actual, {}).get(lhs)
+
+                if goto_estado is None:
+                    print("\n------ Error en GOTO:")
+                    print(f"   → Estado actual después del reduce: {estado_actual}")
+                    print(f"   → No hay transición GOTO para el símbolo '{lhs}'")
+                    return False
+
                 print(f"← Reduce: {lhs} → {' '.join(rhs)}")
                 print(f"→ Goto {goto_estado}")
+                stack.append(goto_estado)
 
             elif accion == 'acc':
-                print("Cadena aceptada ✅")
+                print("\n ------------ CADENA ACEPTADA ------------- ")
                 return True
 
             else:
-                print(f"Acción inválida: {accion}")
+                print("\n-----------Acción inválida detectada:")
+                print(f"   → Estado: {estado_actual}")
+                print(f"   → Símbolo: '{simbolo_actual}'")
+                print(f"   → Acción desconocida: '{accion}'")
                 return False
+
 
 def simular_texto(texto: str, automata) -> List[List[str]]:
     resultados = []
