@@ -13,13 +13,91 @@ from Yalex.yalReader import yalReader
 from Yalex.generator import generar_afd_unificado, _serialize_automata
 from Yalex.constructor_yalex import leerArchivo_yalex
 
-def simular_texto(texto: str, automata,  ignorar: List[str] = None) -> List[List[str]]:
+import threading
+import queue
+from typing import List
 
+# Cola compartida entre productor y consumidor
+token_queue = queue.Queue()
+
+# Token especial para indicar fin de la producción
+FIN = "FIN_TOKEN"
+
+
+# ------------------- Productor -------------------
+def productor(texto: str, automata, ignorados):
+    tokenizado_tx = simular_texto(texto, automata)
+
+    for lexema, token in tokenizado_tx:
+        if token not in ignorados:
+            token_queue.put(token)  # Encolar solo si no está ignorado
+        else:
+            print(f"Ignorando token: '{lexema}' -> {token}")
+
+    # Señal de fin
+    token_queue.put('$')
+
+
+# ------------------- Consumidor -------------------
+def consumidor(action, goto, producciones):
+    stack = [0]
+    tokens = []
+
+    # Numerar producciones
+    producciones_numeradas = []
+    for lhs, reglas in producciones.items():
+        for regla in reglas:
+            producciones_numeradas.append((lhs, regla))
+
+    print("\n--- Inicio del Parsing (Consumidor) ---")
+
+    while True:
+        token = token_queue.get()
+        if token == FIN:
+            token = '$'  # Añadir EOF
+            tokens.append(token)
+        else:
+            tokens.append(token)
+
+        while True:
+            estado_actual = stack[-1]
+            simbolo_actual = tokens[0]
+
+            accion = action.get(estado_actual, {}).get(simbolo_actual)
+            if not accion:
+                print(f"Error sintáctico: no hay acción para estado {estado_actual} con símbolo '{simbolo_actual}'")
+                return False
+
+            print(f"---[Estado {estado_actual}] Acción: {accion} con símbolo '{simbolo_actual}'")
+
+            if accion.startswith('s'):
+                nuevo_estado = int(accion[1:])
+                stack.append(nuevo_estado)
+                tokens.pop(0)
+                break  # Volver a esperar más tokens si es necesario
+
+            elif accion.startswith('r'):
+                num = int(accion[1:])
+                lhs, rhs = producciones_numeradas[num]
+                for _ in rhs:
+                    stack.pop()
+                estado_actual = stack[-1]
+                goto_estado = goto[estado_actual][lhs]
+                stack.append(goto_estado)
+                print(f"← Reduce: {lhs} → {' '.join(rhs)}")
+                print(f"→ Goto {goto_estado}")
+
+            elif accion == 'acc':
+                print("Cadena aceptada ✅")
+                return True
+
+            else:
+                print(f"Acción inválida: {accion}")
+                return False
+
+def simular_texto(texto: str, automata) -> List[List[str]]:
     resultados = []
     i = 0
-
-    if ignorar is None:
-        ignorar = []
 
     while i < len(texto):
         estado_actual = automata.afd.estado_inicial
@@ -43,8 +121,7 @@ def simular_texto(texto: str, automata,  ignorar: List[str] = None) -> List[List
 
         if ultimo_estado_final is not None:
             lexema = texto[i:ultima_pos_final]
-            if token_encontrado not in ignorar:
-                resultados.append([lexema, token_encontrado])
+            resultados.append([lexema, token_encontrado])
             i = ultima_pos_final
         else:
             resultados.append([texto[i], "ERROR"])
@@ -114,7 +191,6 @@ def main():
 
     no_terminales = list(producciones.keys())
     terminales = sorted(set(tokens))  #tokens que no son terminales
-    producciones = dict(producciones)
 
     #---grammar procesor--
     # calcularFirst
@@ -145,32 +221,32 @@ def main():
 
     t = leerArchivo("./input/prueba.txt")[0]
 
-    # tokenizado = [elem[1] for elem in tokenizado_tx]\
 
     for estado, token in lexical_automata.estado_a_token.items():
         if token == "WHITESPACE":
             lexical_automata.estado_a_token[estado] = "WS"
 
-    tokenizado_tx = simular_texto(t, lexical_automata, ignorados)
-    
-    
     print("\n==== TODOS LOS TOKENS A IGNORAR ====")
     print(ignorados)
 
 
-    tokenizado = [token for lexema, token in tokenizado_tx if token not in ignorados]
-    # tokenizado = [elem[1] for elem in tokenizado_tx if elem[1] != "ERROR"]
+    # Crear hilos
+    hilo_productor = threading.Thread(target=productor, args=(t, lexical_automata, list(ignorados)))
+    hilo_consumidor = threading.Thread(target=consumidor, args=(action, goto, producciones))
 
-    print(tokenizado)
-    print("Lexemas tokenizados:")
-    for lexema, token in tokenizado_tx:
-        print(f"  {repr(lexema)} -> {token}")
+    # Iniciar hilos
+    hilo_productor.start()
+    hilo_consumidor.start()
+
+    # Esperar a que ambos terminen
+    hilo_productor.join()
+    hilo_consumidor.join()
+
+
 
     tokens_prueba_yalp1 = ["ID", "PLUS", "ID", "TIMES", "LPAREN", "ID", "PLUS", "ID", "RPAREN"]
 
-    resultado = ejecutarParser(tokenizado, action, goto, producciones)
 
-    print(f"\n Resultado del análisis: {'-----ACEPTEADA-----' if resultado else '-----RECHAZADA-----'}")
 
 
 
