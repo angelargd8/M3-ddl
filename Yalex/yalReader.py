@@ -6,6 +6,7 @@ class yalReader:
         self.text = text
         self.list = [] # para llevar el orden / es necesario cuidar la precedencia
         self.dicc = {}  # diccionario para las definiciones y expresiones
+        self.ignore = [] #lista de nombres de tokens a ignorar
 
         self.rules_tokens = {}
         self.tokens = {}
@@ -35,6 +36,9 @@ class yalReader:
 
     def get_trailer(self):
         return self.trailer
+    
+    def get_ignore(self):
+        return self.ignore
 
     def expand_optional(self,expression) :
         new_exp = ""
@@ -308,7 +312,14 @@ class yalReader:
                         i += 1
                     i += 1
                 token_name = token_name.strip()
+                # if pattern and token_name:
+                #     self.rules_tokens[pattern] = token_name
                 if pattern and token_name:
+                    # Buscar si el pattern es equivalente a una definición previa (como WS)
+                    for definicion, expresion in self.dicc.items():
+                        if pattern.strip() == expresion.strip():
+                            token_name = definicion  # Usa el nombre definido en let
+                            break
                     self.rules_tokens[pattern] = token_name
 
                 if i < length:
@@ -319,7 +330,18 @@ class yalReader:
                         inside_rules = False
                         if self.text[i]== "{":
                             i -= 1
-
+                
+                if self.text[i:i + 6] == "ignore":
+                    i += 6
+                    while i < length and self.text[i].isspace():
+                        i += 1
+                    nombre_token = ""
+                    while i < length and self.text[i] not in "\n{}":
+                        nombre_token += self.text[i]
+                        i += 1
+                    nombre_token = nombre_token.strip()
+                    if nombre_token:
+                        self.ignore.append(nombre_token)
 
             i += 1  # Avanzar en el código
 

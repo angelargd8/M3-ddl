@@ -12,9 +12,13 @@ from Yalex.lexicalAnalizer import get_pickle_automata
 from Yalex.yalReader import yalReader
 from Yalex.generator import generar_afd_unificado, _serialize_automata
 from Yalex.constructor_yalex import leerArchivo_yalex
-def simular_texto(texto: str, automata) -> List[List[str]]:
+
+def simular_texto(texto: str, automata,  ignorar: List[str] = None) -> List[List[str]]:
     resultados = []
     i = 0
+
+    if ignorar is None:
+        ignorar = []
 
     while i < len(texto):
         estado_actual = automata.afd.estado_inicial
@@ -38,7 +42,8 @@ def simular_texto(texto: str, automata) -> List[List[str]]:
 
         if ultimo_estado_final is not None:
             lexema = texto[i:ultima_pos_final]
-            resultados.append([lexema, token_encontrado])
+            if token_encontrado not in ignorar:
+                resultados.append([lexema, token_encontrado])
             i = ultima_pos_final
         else:
             resultados.append([texto[i], "ERROR"])
@@ -52,8 +57,13 @@ def main():
 
     opcion = int(input(("1) Cargar Pickle \n2) Leer yal nuevo\n")))
     lexical_automata = None
+    ignore = []
     if opcion == 1:
-        #  lectura del lexical automata
+        # #  lectura del lexical automata.
+        if lexical_automata:
+            print("Ya se ha cargado el automata, se va a borrar el anterior")
+            lexical_automata = None  # Reiniciar el automata si ya existe
+            return
         lexical_automata = get_pickle_automata("./Yalex/out/lexical_out/lexicalAutomata.pkl")
         if lexical_automata:
             pass
@@ -61,12 +71,20 @@ def main():
             print("No se pudo encontrar el archivo")
     else:
 
-        contenido_yal = leerArchivo_yalex("yalDocs/slr-4.yal")
+        contenido_yal = leerArchivo_yalex("yalDocs/slr-2.yal")
         if contenido_yal:
             print(f"\nArchivo Yal leído correctamente\n")
 
             yal = yalReader(contenido_yal)
             tokens = yal.get_tokens()
+            ignore= yal.get_ignore()
+            
+            if "WHITESPACE" in tokens and "WS" not in tokens:
+                tokens["WS"] = tokens.pop("WHITESPACE")
+                ignore = ["WS" if x == "WHITESPACE" else x for x in ignore]
+
+            print("[DEBUG] Tokens a ignorar definidos por el .yal:")
+            print(ignore)
 
             print("Tokens detectados:")
             for nombre, expr in tokens.items():
@@ -74,18 +92,20 @@ def main():
 
 
             lexical_automata = generar_afd_unificado(tokens)
+            for estado, token in lexical_automata.estado_a_token.items():
+                if token == "WHITESPACE":
+                    lexical_automata.estado_a_token[estado] = "WS"
+                    
             _serialize_automata(lexical_automata, "lexical_out")
 
     # agregar validacion de archivo y que sean varios xd
     archivo = "./yapar/slr-2.yalp"
-    tokens, producciones, ignorados = leerYapar(archivo)
+    tokens, producciones, ignorados_yalp = leerYapar(archivo)
 
     print("\n==== TOKENS IGNORADOS====")
-    print(ignorados)
+    print(ignorados_yalp)
 
-    for token in tokens:
-        if token in ignorados:
-            tokens.remove(token)  # eliminar los tokens que estan en ignorados
+    tokens = [t for t in tokens if t not in ignorados_yalp]
 
     # termina lectura de tokens
     print("\n==== TOKENS ====")
@@ -119,10 +139,29 @@ def main():
     print("\n==================== Tabla SLR (Action | goto) ============================")
     imprimirTablas(action, goto, terminales, no_terminales)
 
-    t = "15+69 -42;"
-    tokenizado_tx = simular_texto(t, lexical_automata)
-    tokenizado = [elem[1] for elem in tokenizado_tx]
+    ignorados = list(set(ignorados_yalp + ignore))
+
+    t = "15+ 69;"
+    
+    # tokenizado = [elem[1] for elem in tokenizado_tx]\
+
+    for estado, token in lexical_automata.estado_a_token.items():
+        if token == "WHITESPACE":
+            lexical_automata.estado_a_token[estado] = "WS"
+
+    tokenizado_tx = simular_texto(t, lexical_automata, ignorados)
+    
+    
+    print("\n==== TODOS LOS TOKENS A IGNORAR ====")
+    print(ignorados)
+
+
+    tokenizado = [token for lexema, token in tokenizado_tx if token not in ignorados]
+    # tokenizado = [elem[1] for elem in tokenizado_tx if elem[1] != "ERROR"]
     print(tokenizado)
+    print("Lexemas tokenizados:")
+    for lexema, token in tokenizado_tx:
+        print(f"  {repr(lexema)} -> {token}")
 
     tokens_prueba_yalp1 = ["ID", "PLUS", "ID", "TIMES", "LPAREN", "ID", "PLUS", "ID", "RPAREN"]
 

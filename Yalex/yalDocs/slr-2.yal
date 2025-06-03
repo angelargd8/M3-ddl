@@ -9,6 +9,8 @@ let digit = ['0'-'9']
 let digits = digit+
 let id = letter(letter|digit)*
 let number = digits('.'digits)?('E'['+''-']?digits)?
+let SEMICOLON = ';'
+ignore ws
 
 rule tokens =
     ws        { return WHITESPACE }               (* Cambie por una acción válida, que devuelva el token *)
@@ -20,5 +22,6 @@ rule tokens =
   | '/'       { return DIV }
   | '('       { return LPAREN }
   | ')'       { return RPAREN }
+  | ";" { return SEMICOLON }
 
 (* Introducir cualquier trailer aqui *)
