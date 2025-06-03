@@ -14,6 +14,7 @@ from Yalex.generator import generar_afd_unificado, _serialize_automata
 from Yalex.constructor_yalex import leerArchivo_yalex
 
 def simular_texto(texto: str, automata,  ignorar: List[str] = None) -> List[List[str]]:
+
     resultados = []
     i = 0
 
@@ -113,6 +114,7 @@ def main():
 
     no_terminales = list(producciones.keys())
     terminales = sorted(set(tokens))  #tokens que no son terminales
+    producciones = dict(producciones)
 
     #---grammar procesor--
     # calcularFirst
@@ -141,8 +143,8 @@ def main():
 
     ignorados = list(set(ignorados_yalp + ignore))
 
-    t = "15+ 69;"
-    
+    t = leerArchivo("./input/prueba.txt")[0]
+
     # tokenizado = [elem[1] for elem in tokenizado_tx]\
 
     for estado, token in lexical_automata.estado_a_token.items():
@@ -158,6 +160,7 @@ def main():
 
     tokenizado = [token for lexema, token in tokenizado_tx if token not in ignorados]
     # tokenizado = [elem[1] for elem in tokenizado_tx if elem[1] != "ERROR"]
+
     print(tokenizado)
     print("Lexemas tokenizados:")
     for lexema, token in tokenizado_tx:
