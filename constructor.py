@@ -48,26 +48,21 @@ class BufferLectura:
         #Si no, retorna el siguiente caracter
         return char
 
-def leerArchivo(file: str) -> Union[List[str], str]:
+
+import os
+from typing import Union
+
+
+def leerArchivo(file: str) -> Union[str, str]:
     try:
         script_dir = os.path.dirname(__file__)
         file_path = os.path.join(script_dir, file)
 
         buffer = BufferLectura(file_path)
-        contenido = []
-        linea_actual = ""
+        contenido = ""
 
-        # Reconstruye lineas caracter por caracter
         for char in buffer:
-            if char == "\n":
-                contenido.append(linea_actual)
-                linea_actual = ""
-            else:
-                linea_actual += char
-        
-        # Agrega última línea si no termina en salto de lineas
-        if linea_actual:
-            contenido.append(linea_actual)
+            contenido += char
 
         print(contenido, type(contenido))
         return contenido

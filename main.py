@@ -32,7 +32,8 @@ def productor(texto: str, automata, ignorados):
         if token not in ignorados:
             token_queue.put(token)  # Encolar solo si no está ignorado
         else:
-            print(f"Ignorando token: '{lexema}' -> {token}")
+            pass
+            # print(f"Ignorando token: '{lexema}' -> {token}")
 
     # Señal de fin
     token_queue.put('$')
@@ -235,15 +236,15 @@ def main():
     ignorados = list(set(ignorados_yalp + ignore))
 
     print("\n==== leyendo archivo... ====")
-    t = leerArchivo("./input/prueba.txt")[0]
+    t = leerArchivo("./input/prueba.txt")
 
 
     for estado, token in lexical_automata.estado_a_token.items():
         if token == "WHITESPACE":
             lexical_automata.estado_a_token[estado] = "WS"
 
-    print("\n==== TODOS LOS TOKENS A IGNORAR ====")
-    print(ignorados)
+    # print("\n==== TODOS LOS TOKENS A IGNORAR ====")
+    # print(ignorados)
 
 
     # Crear hilos
@@ -257,8 +258,6 @@ def main():
     # Esperar a que ambos terminen
     hilo_productor.join()
     hilo_consumidor.join()
-
-
 
     tokens_prueba_yalp1 = ["ID", "PLUS", "ID", "TIMES", "LPAREN", "ID", "PLUS", "ID", "RPAREN"]
 
