@@ -139,3 +139,13 @@ def leerYapar(filepath: str):
                         producciones[current_non_terminal].append(symbols)
 
     return sorted(tokens), producciones, sorted(ignore)
+
+def leerExpresiones(path: str) -> list:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return [line.strip() for line in f if line.strip()]
+    except FileNotFoundError:
+        print(f"[ERROR] Archivo no encontrado: {path}")
+    except Exception as e:
+        print(f"[ERROR] Al leer el archivo '{path}': {e}")
+    return []
