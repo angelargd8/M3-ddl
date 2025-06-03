@@ -158,7 +158,8 @@ def main():
     print(tokens)
 
     no_terminales = list(producciones.keys())
-    terminales = sorted(set(tokens))  #tokens que no son terminales
+    no_terminales = [nt for nt in no_terminales if nt not in ignorados]
+    terminales = sorted(set(t for t in tokens if t not in ignorados))  
 
     #---grammar procesor--
     # calcularFirst
