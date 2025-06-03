@@ -14,15 +14,26 @@ para indicar que puede devolver una lista de cadenas o un mensaje de error
 
 def leerArchivo(file: str) -> Union[List[str], str]:
     try:
-        script_dir = os.path.dirname(__file__)  # Directorio del script actual
+        script_dir = os.path.dirname(__file__) # Directorio del script actual
         file_path = os.path.join(script_dir, file)
 
         with open(file_path, "r", encoding="utf-8") as f:
-            # expresiones = f.read().split("\n")
-            expresiones = [line.rstrip("\n") for line in f]
+            contenido = []
+            linea_actual = ""
+            while True:
+                char = f.read(1)
+                if not char:
+                    if linea_actual:
+                        contenido.append(linea_actual)
+                    break
+                if char == "\n":
+                    contenido.append(linea_actual)
+                    linea_actual = ""
+                else:
+                    linea_actual += char
 
-        print(expresiones, type(expresiones))
-        return expresiones
+        print(contenido, type(contenido))
+        return contenido
     except FileNotFoundError:
         return "El archivo no fue encontrado"
     except IOError:
@@ -31,11 +42,20 @@ def leerArchivo(file: str) -> Union[List[str], str]:
 
 def leerYapar(filepath: str):
 
+    lines = []
     with open(filepath, "r", encoding="utf-8") as f:
-        # lines = f.read().split("\n")
-        lines = [line.rstrip("\n") for line in f]
-        # lines = [line.strip() for line in f if line.strip()]
-
+        linea_actual = ""
+        while True:
+            char = f.read(1)
+            if not char:
+                if linea_actual:
+                    lines.append(linea_actual)
+                break
+            if char == "\n":
+                lines.append(linea_actual)
+                linea_actual = ""
+            else:
+                linea_actual += char
 
     tokens = set()
     ignore = set()
