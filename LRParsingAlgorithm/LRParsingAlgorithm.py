@@ -49,7 +49,8 @@ def ejecutarParser(tokens, action, goto, producciones):
     # Preparar la pila e índice de entrada
     stack = [0]
     index = 0
-    tokens.append('$')
+    # tokens.append('$')
+    tokens = tokens[:] + ['$']
 
     # Numerar las producciones para mapear reduce
     producciones_numeradas = []
@@ -84,7 +85,13 @@ def ejecutarParser(tokens, action, goto, producciones):
             for _ in rhs:
                 stack.pop()
             estado_actual = stack[-1]
-            goto_estado = goto[estado_actual][lhs]
+            # goto_estado = goto[estado_actual][lhs]
+            goto_estado = goto.get(estado_actual, {}).get(lhs)
+
+            if goto_estado is None:
+                print(f"Error: no hay transición GOTO definida para estado {estado_actual} y no terminal '{lhs}'")
+                return False
+            
             stack.append(goto_estado)
             print(f"← Reduce usando producción: {lhs} → {' '.join(rhs)}")
             print(f"→ Ir al estado {goto_estado} (goto)")
