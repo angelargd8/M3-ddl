@@ -83,6 +83,10 @@ def main():
     print("\n==== TOKENS IGNORADOS====")
     print(ignorados)
 
+    for token in tokens:
+        if token in ignorados:
+            tokens.remove(token)  # eliminar los tokens que estan en ignorados
+
     # termina lectura de tokens
     print("\n==== TOKENS ====")
     print(tokens)
