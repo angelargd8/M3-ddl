@@ -234,6 +234,7 @@ def main():
 
     ignorados = list(set(ignorados_yalp + ignore))
 
+    print("\n==== leyendo archivo... ====")
     t = leerArchivo("./input/prueba.txt")[0]
 
 

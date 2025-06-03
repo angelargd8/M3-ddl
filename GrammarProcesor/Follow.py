@@ -9,12 +9,14 @@ Sirve para saber cuando se debe de aplicar una produccion derivada de epsolin
 y para construir la tabla de parsing LL(1) 
 """
 
-follows = defaultdict(set)
+
 
 
 def calcularFollow(producciones: dict, firsts: dict) -> dict:
     # global diccionarioProducciones
     # diccionarioProducciones = diccionarioForFolow(gramatica)
+
+    follows = defaultdict(set)
 
     # Inicializar FOLLOW con símbolo inicial
     simbolo_inicial = list(producciones.keys())[0]
@@ -26,39 +28,31 @@ def calcularFollow(producciones: dict, firsts: dict) -> dict:
         for A in producciones:
             for produccion in producciones[A]:
                 simbolos = produccion
-                for i in range(len(simbolos)):
-                    B = simbolos[i]
-                    if not IsTerminal(B,producciones):
+                for i, B in enumerate(simbolos):
+                    if not IsTerminal(B, producciones):
+                        beta = simbolos[i + 1:]
 
-                        # B está al final: FOLLOW(A) ⊆ FOLLOW(B)
-                        if i == len(simbolos) - 1:
-                            tam_antes = len(follows[B])
-                            follows[B].update(follows[A])
-                            if len(follows[B]) > tam_antes:
-                                cambiado = True
-                            continue  # no hay β que procesar
-
-                        #  A → αBβ y ε ∈ FIRST(β)
                         primero_de_beta = set()
-                        epsilon_en_beta = False
+                        epsilon_en_beta = True  # se asume que puede derivar ε
 
-                        beta = simbolos[i + 1 :]
-                        for simbolo_beta in beta:
-                            if IsTerminal(simbolo_beta,producciones):
-                                primero_de_beta.add(simbolo_beta)
+                        for simbolo in beta:
+                            if IsTerminal(simbolo, producciones):
+                                primero_de_beta.add(simbolo)
+                                epsilon_en_beta = False
                                 break
-                            primero = firsts[simbolo_beta]
-                            primero_de_beta.update(primero - {"ε"})
-                            if "ε" in primero:
-                                continue
-                            break
-                        else:
-                            epsilon_en_beta = True
+                            else:
+                                primero = firsts[simbolo]
+                                primero_de_beta.update(primero - {"ε"})
+                                if "ε" not in primero:
+                                    epsilon_en_beta = False
+                                    break
 
                         tam_antes = len(follows[B])
                         follows[B].update(primero_de_beta)
-                        if epsilon_en_beta:
+
+                        if epsilon_en_beta or not beta:
                             follows[B].update(follows[A])
+
                         if len(follows[B]) > tam_antes:
                             cambiado = True
 
