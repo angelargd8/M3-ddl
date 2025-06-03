@@ -140,10 +140,30 @@ def leerYapar(filepath: str):
 
     return sorted(tokens), producciones, sorted(ignore)
 
+"""
+Lee un archivo línea por linea usando BufferLectura lectura carácter por carácter
+"""
 def leerExpresiones(path: str) -> list:
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            return [line.strip() for line in f if line.strip()]
+        buffer = BufferLectura(path)
+        expresiones = []
+        linea_actual = ""
+
+        for char in buffer:
+            if char == "\n":
+                linea_limpia = linea_actual.strip()
+                if linea_limpia:
+                    expresiones.append(linea_limpia)
+                linea_actual = ""
+            else:
+                linea_actual += char
+
+        # Procesar la uiltima línea si no termina en salto de linea
+        if linea_actual.strip():
+            expresiones.append(linea_actual.strip())
+
+        return expresiones
+
     except FileNotFoundError:
         print(f"[ERROR] Archivo no encontrado: {path}")
     except Exception as e:
