@@ -5,32 +5,69 @@ from collections import defaultdict
 # leer el archivo
 
 """
-Al refactorizar el leer el archivo se uso IA, y se aplico 
-Union[List[str], str] en vez de solo '-> str', como se tenia en el lab de buffer
-ya que la IA, recomendo devolver Union[List[str], str] 
-para indicar que puede devolver una lista de cadenas o un mensaje de error
+Al refactorizar el leer el archivo se uso IA,
+porque la verdad ya no nos recordabamos que habiamos hecho un buffer
 """
 
+"""
+ lector secuencial carácter por carácter desde un archivo de texto, 
+ simulando el comportamiento de un buffer de entrada como los usados en 
+ analizadores léxicos 
+
+"""
+class BufferLectura:
+    def __init__(self, filepath: str):
+        # objeto de archivo abierto para lectura en modo texto r
+        self.file = open(filepath, "r", encoding="utf-8")
+        #bandera que indica si se ha alcanzado el final del archivo
+        self.eof = False
+
+    """Devuelve el siguiente carácter del archivo"""
+    def next_char(self) -> str:
+        
+        if self.eof:
+            return ""
+
+        char = self.file.read(1)
+        if not char:
+            self.eof = True
+            self.file.close()
+            return ""
+        return char
+
+    #retorna el propio objeto como un iterador.
+    def __iter__(self):
+        return self
+
+    #Llama internamente a next_char()
+    def __next__(self):
+        char = self.next_char()
+        #Si el archivo ha terminadolanza StopIteration para compatibilidad con for
+        if char == "":
+            raise StopIteration
+        #Si no, retorna el siguiente caracter
+        return char
 
 def leerArchivo(file: str) -> Union[List[str], str]:
     try:
-        script_dir = os.path.dirname(__file__) # Directorio del script actual
+        script_dir = os.path.dirname(__file__)
         file_path = os.path.join(script_dir, file)
 
-        with open(file_path, "r", encoding="utf-8") as f:
-            contenido = []
-            linea_actual = ""
-            while True:
-                char = f.read(1)
-                if not char:
-                    if linea_actual:
-                        contenido.append(linea_actual)
-                    break
-                if char == "\n":
-                    contenido.append(linea_actual)
-                    linea_actual = ""
-                else:
-                    linea_actual += char
+        buffer = BufferLectura(file_path)
+        contenido = []
+        linea_actual = ""
+
+        # Reconstruye lineas caracter por caracter
+        for char in buffer:
+            if char == "\n":
+                contenido.append(linea_actual)
+                linea_actual = ""
+            else:
+                linea_actual += char
+        
+        # Agrega última línea si no termina en salto de lineas
+        if linea_actual:
+            contenido.append(linea_actual)
 
         print(contenido, type(contenido))
         return contenido
@@ -41,65 +78,69 @@ def leerArchivo(file: str) -> Union[List[str], str]:
 
 
 def leerYapar(filepath: str):
-
-    lines = []
-    with open(filepath, "r", encoding="utf-8") as f:
-        linea_actual = ""
-        while True:
-            char = f.read(1)
-            if not char:
-                if linea_actual:
-                    lines.append(linea_actual)
-                break
-            if char == "\n":
-                lines.append(linea_actual)
-                linea_actual = ""
-            else:
-                linea_actual += char
+    buffer = BufferLectura(filepath)
 
     tokens = set()
     ignore = set()
     producciones = defaultdict(list)
     current_non_terminal = None
 
+    linea_actual = ""
 
-    for line in lines:
-        line = line.strip()
+    # Leer linea por linea, reconstruyendola desde caracteres
+    for char in buffer:
+        if char == "\n":
+            line = linea_actual.strip()
+            linea_actual = ""
 
-        #ignorar las vacias y comentarios
-        if not line or line.startswith("/*") or line.startswith("//"):
-            continue
+            # Ignorar líneas vacías y comentarios
+            if not line or line.startswith("/*") or line.startswith("//"):
+                continue
+            
+            # Extraer IGNORE
+            if line.startswith("IGNORE"):
+                ignore.update(line.replace("IGNORE", "").split())
+                continue
+            
+            # Extraer %token
+            if line.startswith("%token"):
+                tokens.update(line.replace("%token", "").split())
+                continue
 
-        #detectar ignore
-        if line.startswith("IGNORE"):
-            ignore.update(line.replace("IGNORE", "").split())
-            continue
+            # Detectar nuevo no terminal
+            if line.endswith(":"):
+                current_non_terminal = line[:-1].strip()
+                continue
 
-        #detectar tokens
-        if line.startswith("%token"):
-            tokens.update(line.replace("%token", "").split())
-            continue
+            # Agregar producciones asociadas al no terminal actual
+            if current_non_terminal and ("|" in line or ";" in line or line):
+                if ";" in line:
+                    line = line.replace(";", "")
+                partes = [p.strip() for p in line.split("|")]
+                for parte in partes:
+                    symbols = parte.split()
+                    if symbols:
+                        producciones[current_non_terminal].append(symbols)
+        else:
+            linea_actual += char
 
-        #detectar nuevas reglas, como expresiones
-        if line.endswith(":"):
-            current_non_terminal = line[:-1].strip()
-            continue
+    # Procesar la última línea si no termina en \n
+    if linea_actual:
+        line = linea_actual.strip()
+        if line and not line.startswith("/*") and not line.startswith("//"):
+            if line.startswith("IGNORE"):
+                ignore.update(line.replace("IGNORE", "").split())
+            elif line.startswith("%token"):
+                tokens.update(line.replace("%token", "").split())
+            elif line.endswith(":"):
+                current_non_terminal = line[:-1].strip()
+            elif current_non_terminal:
+                if ";" in line:
+                    line = line.replace(";", "")
+                partes = [p.strip() for p in line.split("|")]
+                for parte in partes:
+                    symbols = parte.split()
+                    if symbols:
+                        producciones[current_non_terminal].append(symbols)
 
-        #detectar producciones
-        if current_non_terminal and ("|" in line or ";" in line or line):
-            # Si hay un punto y coma, eliminarlo
-            if ";" in line:
-                line = line.replace(";", "")
-
-            partes = [partes.strip() for partes in line.split("|")]
-
-            for parte in partes:
-                symbols = parte.split()
-                if symbols:
-                    producciones[current_non_terminal].append(symbols)
-
-    tokens = sorted(set(tokens))  # Ordenar los tokens, esto es para que cada ves que se repita, sea en el mismo orden
-
-    return tokens, producciones, sorted(ignore)
-
-    
+    return sorted(tokens), producciones, sorted(ignore)
