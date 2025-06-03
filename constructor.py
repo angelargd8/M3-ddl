@@ -34,7 +34,7 @@ def leerYapar(filepath: str):
         lines = f.read().split("\n")
 
 
-    tokens =set()
+    tokens = set()
     producciones = defaultdict(list)
     current_non_terminal = None
 

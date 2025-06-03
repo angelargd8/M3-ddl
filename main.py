@@ -4,15 +4,84 @@ from GrammarProcesor.Follow import *
 from AutomatonBuilder.ConstruirAutomata import *
 from AutomatonBuilder.grafico import *
 from LRParsingAlgorithm.LRParsingAlgorithm import *
+
 from LRParsingAlgorithm.TablaSLR import *
+
+
+from Yalex.lexicalAnalizer import get_pickle_automata
+from Yalex.yalReader import yalReader
+from Yalex.generator import generar_afd_unificado, _serialize_automata
+from Yalex.constructor_yalex import leerArchivo_yalex
+def simular_texto(texto: str, automata) -> List[List[str]]:
+    resultados = []
+    i = 0
+
+    while i < len(texto):
+        estado_actual = automata.afd.estado_inicial
+        j = i
+        ultimo_estado_final = None
+        ultima_pos_final = i
+        token_encontrado = None
+
+        while j < len(texto):
+            c = texto[j]
+            transiciones = automata.afd.transiciones.get(estado_actual, {})
+            if c in transiciones:
+                estado_actual = transiciones[c]
+                j += 1
+                if estado_actual in automata.afd.estados_finales:
+                    ultimo_estado_final = estado_actual
+                    ultima_pos_final = j
+                    token_encontrado = automata.estado_a_token.get(estado_actual)
+            else:
+                break
+
+        if ultimo_estado_final is not None:
+            lexema = texto[i:ultima_pos_final]
+            resultados.append([lexema, token_encontrado])
+            i = ultima_pos_final
+        else:
+            resultados.append([texto[i], "ERROR"])
+            i += 1
+
+    return resultados
 
 
 def main():
 
-    #agregar validacion de archivo y que sean varios xd
-    archivo = "./yapar/slr-1.yalp"
+
+    opi = int(input(("1) Cargar Pickle \n2) Leer yal nuevo\n")))
+    lexical_automata = None
+    if opi == 1:
+        #  lectura del lexical automata
+        lexical_automata = get_pickle_automata("./Yalex/out/lexical_out/lexicalAutomata.pkl")
+        if lexical_automata:
+            pass
+        else:
+            print("No se pudo encontrar el archivo")
+    else:
+
+        contenido_yal = leerArchivo_yalex("yalDocs/slr-4.yal")
+        if contenido_yal:
+            print(f"\nArchivo Yal leído correctamente\n")
+
+            yal = yalReader(contenido_yal)
+            tokens = yal.get_tokens()
+
+            print("Tokens detectados:")
+            for nombre, expr in tokens.items():
+                print(f"  {nombre}: {expr}")
+
+
+            lexical_automata = generar_afd_unificado(tokens)
+            _serialize_automata(lexical_automata, "lexical_out")
+
+    # agregar validacion de archivo y que sean varios xd
+    archivo = "./yapar/slr-2.yalp"
     tokens, producciones = leerYapar(archivo)
 
+
+    # termina lectura de tokens
     print("\n==== TOKENS ====")
     print(tokens)
 
@@ -44,24 +113,20 @@ def main():
     print("\n==================== Tabla SLR (Action | goto) ============================")
     imprimirTablas(action, goto, terminales, no_terminales)
 
-    #2. LR Parsing Program
-    print("\n==== Prueba de Parsing ====")
-    # Solo se pueden usar PLUS y TIMES, con ( ) y solo ID
-    # ['ID', 'LPAREN', 'PLUS', 'RPAREN', 'TIMES']
-    tokens_prueba_yalp1 = ["ID", "PLUS", "ID", "TIMES", "LPAREN", "ID", "PLUS", "ID", "RPAREN"]
-    # Se pueden usar NUMBER, MINUS y DIV ademas de los anteriores
-    # ['DIV', 'ID', 'LPAREN', 'MINUS', 'NUMBER', 'PLUS', 'RPAREN', 'TIMES']
-    tokens_prueba_yalp2 = ["ID", "PLUS", "NUMBER", "DIV", "LPAREN", "NUMBER", "MINUS", "NUMBER", "RPAREN"]
-    # solo PLUS y TIMES y ( ) pero con number en minuscula y sin ID
-    # ['LPAREN', 'NUMBER', 'PLUS', 'RPAREN', 'TIMES']
-    tokens_prueba_yalp3 = ["number", "PLUS", "LPAREN", "number" , "TIMES", "number", "RPAREN"]
-    # Creo que tiene que ser asignaciones nada mas, como A = 3 + (4 * 5) o cosas asi
-    # ['ASSIGNOP', 'DIV', 'EQ', 'ID', 'LPAREN', 'LT', 'MINUS', 'NUMBER', 'PLUS', 'RPAREN', 'SEMICOLON', 'TIMES']
-    tokens_prueba_yalp4 = [ "ID", "ASSIGNOP", "NUMBER", "PLUS", "NUMBER", "TIMES", "LPAREN", "NUMBER", "MINUS", "NUMBER", "RPAREN"]
+    t = "15+69 -42;"
+    tokenizado_tx = simular_texto(t, lexical_automata)
+    tokenizado = [elem[1] for elem in tokenizado_tx]
+    print(tokenizado)
 
-    
-    resultado = ejecutarParser(tokens_prueba_yalp1, action, goto, producciones)
+    tokens_prueba_yalp1 = ["ID", "PLUS", "ID", "TIMES", "LPAREN", "ID", "PLUS", "ID", "RPAREN"]
+
+    resultado = ejecutarParser(tokenizado, action, goto, producciones)
 
     print(f"\n Resultado del análisis: {'-----ACEPTEADA-----' if resultado else '-----RECHAZADA-----'}")
 
+
+
+
 main()
+
+
