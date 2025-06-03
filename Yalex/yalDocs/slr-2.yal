@@ -2,7 +2,7 @@
 
 (* Introducir cualquier header aqui *)
 
-let delim = ['\s''\t''\n']
+let delim = ["\s\t\n"]
 let ws = delim+
 let letter = ['A'-'Z''a'-'z']
 let digit = ['0'-'9']
@@ -13,7 +13,8 @@ let SEMICOLON = ';'
 ignore ws
 
 rule tokens =
-    ws        { return WHITESPACE }               (* Cambie por una acción válida, que devuelva el token *)
+    ws        { return WS }
+  | ';'       { return SEMICOLON }            (* Cambie por una acción válida, que devuelva el token *)
   | id        { return ID }
   | number    { return NUMBER }
   | '+'       { return PLUS }
