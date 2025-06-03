@@ -64,7 +64,7 @@ def leerArchivo(file: str) -> Union[str, str]:
         for char in buffer:
             contenido += char
 
-        print(contenido, type(contenido))
+        # print(contenido, type(contenido))
         return contenido
     except FileNotFoundError:
         return "El archivo no fue encontrado"

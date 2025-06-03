@@ -236,7 +236,7 @@ def main():
     ignorados = list(set(ignorados_yalp + ignore))
 
     print("\n==== leyendo archivo... ====")
-    t = leerArchivo("./input/prueba.txt")
+    t = leerArchivo("./input/numbers_expressions.txt")
 
 
     for estado, token in lexical_automata.estado_a_token.items():
