@@ -34,9 +34,11 @@ def leerYapar(filepath: str):
     with open(filepath, "r", encoding="utf-8") as f:
         # lines = f.read().split("\n")
         lines = [line.rstrip("\n") for line in f]
+        # lines = [line.strip() for line in f if line.strip()]
 
 
     tokens = set()
+    ignore = set()
     producciones = defaultdict(list)
     current_non_terminal = None
 
@@ -46,6 +48,11 @@ def leerYapar(filepath: str):
 
         #ignorar las vacias y comentarios
         if not line or line.startswith("/*") or line.startswith("//"):
+            continue
+
+        #detectar ignore
+        if line.startswith("IGNORE"):
+            ignore.update(line.replace("IGNORE", "").split())
             continue
 
         #detectar tokens
@@ -73,6 +80,6 @@ def leerYapar(filepath: str):
 
     tokens = sorted(set(tokens))  # Ordenar los tokens, esto es para que cada ves que se repita, sea en el mismo orden
 
-    return tokens, producciones
+    return tokens, producciones, sorted(ignore)
 
     

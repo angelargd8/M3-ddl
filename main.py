@@ -78,8 +78,10 @@ def main():
 
     # agregar validacion de archivo y que sean varios xd
     archivo = "./yapar/slr-2.yalp"
-    tokens, producciones = leerYapar(archivo)
+    tokens, producciones, ignorados = leerYapar(archivo)
 
+    print("\n==== TOKENS IGNORADOS====")
+    print(ignorados)
 
     # termina lectura de tokens
     print("\n==== TOKENS ====")
